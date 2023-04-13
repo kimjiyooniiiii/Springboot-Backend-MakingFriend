@@ -1,0 +1,16 @@
+server:
+  port: 8088
+
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://121.187.22.37:3310/doori?serverTimezone=Asia/Seoul
+    username: dbuser
+    password: password!
+  jpa:
+    hibernate:
+      ddl-auto: create #create update none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
