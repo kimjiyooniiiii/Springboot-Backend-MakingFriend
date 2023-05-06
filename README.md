@@ -39,7 +39,7 @@ https://www.toptal.com/developers/gitignore
 
 - <b>clone : github → local</b>
 ``` 
-git clone https://github.com/star-moon-cloud-k/408project.git
+git clone https://github.com/star-moon-cloud-k/RUDoori-.git
 ```
 - <b>branch 이름 확인
 ```
