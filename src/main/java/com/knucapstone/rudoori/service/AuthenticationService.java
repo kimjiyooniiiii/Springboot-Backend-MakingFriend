@@ -1,13 +1,15 @@
-package com.knucapstone.rudoori.controller;
+package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
+import com.knucapstone.rudoori.model.dto.AuthenticationRequest;
+import com.knucapstone.rudoori.model.dto.AuthenticationResponse;
+import com.knucapstone.rudoori.model.dto.RegisterRequest;
 import com.knucapstone.rudoori.model.entity.Role;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +25,14 @@ public class AuthenticationService {
         UserInfo user = UserInfo.builder()
                 .userId(request.getUserId())
                 .userName(request.getUserName())
+                .birthday(request.getBirthday())
+                .gender(request.getGender())
                 .email(request.getUserMail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .userRole(Role.USER)
+                .isUsed(true)
+                .isBlocked(false)
+                .phoneNumber(request.getPhoneNumber())
                 .build();
         userRepository.save(user);
 
