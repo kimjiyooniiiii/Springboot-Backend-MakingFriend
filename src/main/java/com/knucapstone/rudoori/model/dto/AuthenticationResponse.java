@@ -1,4 +1,4 @@
-package com.knucapstone.rudoori.controller;
+package com.knucapstone.rudoori.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
