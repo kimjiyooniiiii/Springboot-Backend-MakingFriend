@@ -21,6 +21,9 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String SECRET_KEY ;
 
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+
     /**
      * token의 Subject값으로 반환
      * jwt 생성시 subject 값을 UserId로 생성
@@ -41,7 +44,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() +86400000))
+                .setExpiration(new Date(System.currentTimeMillis() +jwtExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

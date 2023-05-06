@@ -10,7 +10,14 @@ spring:
     password: password!
   jpa:
     hibernate:
-      ddl-auto: create #create update none
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none #create update none
+
     show-sql: true
+  main:
+    allow-circular-references: true
+jwt:
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #key size (512bit)
+  # https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000	# 1 day
