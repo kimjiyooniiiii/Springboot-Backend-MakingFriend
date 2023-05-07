@@ -7,6 +7,7 @@ import com.knucapstone.rudoori.model.dto.RegisterRequest;
 import com.knucapstone.rudoori.model.entity.Role;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.UserRepository;
+import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,11 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
 
+        UserInfo info = userRepository.findById(request.getUserId()).orElseThrow(NullPointerException::new);
+
+        if(info != null){
+            throw new DuplicateRequestException();
+        }
 
         UserInfo user = UserInfo.builder()
                 .userId(request.getUserId())
