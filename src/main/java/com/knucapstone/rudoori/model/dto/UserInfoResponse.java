@@ -1,12 +1,12 @@
 package com.knucapstone.rudoori.model.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-
-public class UserInfoDto {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserInfoResponse {
     //{
     //  "userId" : "201413373",
     //  "userName" : "김동훈",
@@ -24,6 +24,5 @@ public class UserInfoDto {
     private String major;
     private String nickName;
     private String userMail;
-    private String password;
     private String phoneNumber;
 }
