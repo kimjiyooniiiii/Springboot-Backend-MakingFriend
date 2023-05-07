@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +22,19 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
+
+
         UserInfo user = UserInfo.builder()
                 .userId(request.getUserId())
                 .userName(request.getUserName())
                 .birthday(request.getBirthday())
                 .gender(request.getGender())
                 .email(request.getUserMail())
+                .nickname(request.getNickname())
+                .major(request.getMajor())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .userRole(Role.USER)
                 .isUsed(true)
@@ -42,6 +49,7 @@ public class AuthenticationService {
                         .build();
     }
 
+    @Transactional(readOnly = true)
     public AuthenticationResponse authenticate(AuthenticationRequest request)
     {
         authenticationManager.authenticate(
