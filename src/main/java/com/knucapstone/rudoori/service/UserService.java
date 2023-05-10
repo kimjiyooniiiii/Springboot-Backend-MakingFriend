@@ -47,7 +47,7 @@ public class UserService {
         String storedPwd = userInfo.getPassword();
         boolean equalPwd = passwordEncoder.matches(pwd, storedPwd);
         if (equalPwd) {
-            userInfo.updatePwd(passwordEncoder.encode(updatedPwd));
+            userInfo.setPassword(passwordEncoder.encode(updatedPwd));
         }
         return equalPwd;
     }
