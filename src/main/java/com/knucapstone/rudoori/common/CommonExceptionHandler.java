@@ -2,6 +2,7 @@ package com.knucapstone.rudoori.common;
 
 import com.knucapstone.rudoori.common.ApiResponse;
 import com.sun.jdi.request.DuplicateRequestException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +26,9 @@ public class CommonExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ApiResponse<?>> handleNullPointerException(RuntimeException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError("값을 찾을 수 없습니다."));
+    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<?>> handExpiredJwtException(RuntimeException exception){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.createError("exception"));
     }
 }
