@@ -21,3 +21,4 @@ jwt:
   # https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
   expiration: 86400000	# 1 day
+  refresh-expiration: 604800000 #7days

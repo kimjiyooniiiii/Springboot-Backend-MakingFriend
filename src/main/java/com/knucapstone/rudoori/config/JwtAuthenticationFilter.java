@@ -1,5 +1,6 @@
 package com.knucapstone.rudoori.config;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt =authHeader.substring(7);
+//        if(jwtService.isTokenExpired(jwt)){
+//            throw new RuntimeException("기간이 안됨");
+//        }
         userId = jwtService.extractUserId(jwt);
         /*SecurityContextHolder.getContext().getAuthentication()==null
         인증이 null이면 사용자가 아직 인증을 하지 않았음을 의미

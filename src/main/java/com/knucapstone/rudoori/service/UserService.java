@@ -2,6 +2,7 @@ package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
 import com.knucapstone.rudoori.model.dto.Phw;
+import com.knucapstone.rudoori.model.dto.UserInfoResponse;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,6 @@ public class UserService {
         String id = updatePwdInfo.getUserId();
         String pwd = updatePwdInfo.getPassword();
         String updatedPwd = updatePwdInfo.getUpdatedPwd();
-
         UserInfo userInfo = userRepository.findByUserId(id).get();
         String storedPwd = userInfo.getPassword();
         boolean equalPwd = passwordEncoder.matches(pwd, storedPwd);
@@ -63,4 +63,16 @@ public class UserService {
         return userProfile;
     }
 
+    public UserInfoResponse getInfo(String userId) {
+        UserInfo user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
+        return UserInfoResponse
+                .builder()
+                .userId(user.getUserId())
+                .userName(user.getUsername())
+                .birthday(user.getBirthday())
+                .gender(user.getGender())
+                .nickName(user.getNickname())
+                .major(user.getMajor())
+                .build();
+    }
 }
