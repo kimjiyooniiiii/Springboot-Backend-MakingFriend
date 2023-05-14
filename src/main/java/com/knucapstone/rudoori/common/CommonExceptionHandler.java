@@ -6,6 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,10 +26,14 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ApiResponse<?>> handleNullPointerException(RuntimeException exception){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError("값을 찾을 수 없습니다."));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError(exception.getMessage()));
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<?>> handExpiredJwtException(RuntimeException exception){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.createError("exception"));
+    }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<?>> handleAuthenticationException(RuntimeException exception){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.createError("비밀번호 혹은 로그인 입력 오류"));
     }
 }

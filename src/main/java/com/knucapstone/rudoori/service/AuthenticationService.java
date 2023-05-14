@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +36,20 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * 로그인 기능
+     * 학번이 존재하는지 확인
+     * 없으면, DB에 저장 후 토큰 발급
+     * @param request
+     * @return
+     */
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
 
-        UserInfo info = userRepository.findById(request.getUserId()).orElseThrow(NullPointerException::new);
+        Optional<UserInfo> info = userRepository.findById(request.getUserId());
 
-        if(info != null){
-            throw new DuplicateRequestException();
+        if(info.isPresent()){
+            throw new DuplicateRequestException("중복된 학번입니다.");
         }
 
         UserInfo user = UserInfo.builder()
@@ -60,25 +69,16 @@ public class AuthenticationService {
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
+        saveUserToken(savedUser, refreshToken);
         return AuthenticationResponse.builder()
                         .accessToken(jwtToken)
                         .refreshToken(refreshToken)
                         .build();
     }
 
-    private void saveUserToken(UserInfo savedUser, String jwtToken) {
-        var token = Token.builder()
-                .user(savedUser)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
-                .build();
-                tokenRepository.save(token);
-    }
 
-    @Transactional(readOnly = true)
+
+    @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request)
     {
         authenticationManager.authenticate(
@@ -88,28 +88,19 @@ public class AuthenticationService {
                 )
         );
         var user = userRepository.findById(request.getUserId())
-                .orElseThrow();
+                .orElseThrow(()-> new NullPointerException("존재하지 않는 계정입니다."));
 
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
-        saveUserToken(user,jwtToken);
+        saveUserToken(user,refreshToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    private void revokeAllUserTokens(UserInfo user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
-        if (validUserTokens.isEmpty())
-            return;
-        validUserTokens.forEach(token -> {
-            token.setExpired(true);
-            token.setRevoked(true);
-        });
-        tokenRepository.saveAll(validUserTokens);
-    }
+
 
     public void refreshToken(
             HttpServletRequest request,
@@ -137,6 +128,27 @@ public class AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+    private void revokeAllUserTokens(UserInfo user) {
+        List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+    }
+
+    private void saveUserToken(UserInfo savedUser, String jwtToken) {
+        var token = Token.builder()
+                .user(savedUser)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
     }
 
 }
