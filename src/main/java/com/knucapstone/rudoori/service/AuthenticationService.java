@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,10 +39,10 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
 
-        UserInfo info = userRepository.findById(request.getUserId()).orElseThrow(NullPointerException::new);
+        Optional<UserInfo> info = userRepository.findById(request.getUserId());
 
-        if(info != null){
-            throw new DuplicateRequestException();
+        if(info.isPresent()){
+            throw new DuplicateRequestException("이미 존재하는 사용자입니다.");
         }
 
         UserInfo user = UserInfo.builder()
@@ -89,11 +91,18 @@ public class AuthenticationService {
         );
         var user = userRepository.findById(request.getUserId())
                 .orElseThrow();
-
         var jwtToken = jwtService.generateToken(user);
+
+        System.out.println("--------jwt---------");
+        System.out.println(jwtToken);
         var refreshToken = jwtService.generateRefreshToken(user);
+        System.out.println("--------refresh---------");
+        System.out.println(refreshToken);
+
         revokeAllUserTokens(user);
+
         saveUserToken(user,jwtToken);
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -101,13 +110,17 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(UserInfo user) {
+
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+
         if (validUserTokens.isEmpty())
             return;
+
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
         });
+
         tokenRepository.saveAll(validUserTokens);
     }
 

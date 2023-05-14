@@ -1,10 +1,13 @@
 package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
+import com.knucapstone.rudoori.model.dto.AuthenticationResponse;
+import com.knucapstone.rudoori.model.dto.LogoutRequest;
 import com.knucapstone.rudoori.model.dto.Phw;
 import com.knucapstone.rudoori.model.dto.UserInfoResponse;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.UserRepository;
+import com.knucapstone.rudoori.token.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +24,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+
+
+    private final TokenRepository tokenRepository;
 
     @Transactional
     public boolean deleteUser(Phw.LoginInfo loginInfo) {
@@ -47,7 +51,7 @@ public class UserService {
         String storedPwd = userInfo.getPassword();
         boolean equalPwd = passwordEncoder.matches(pwd, storedPwd);
         if (equalPwd) {
-            userInfo.updatePwd(passwordEncoder.encode(updatedPwd));
+            userInfo.setPassword(passwordEncoder.encode(updatedPwd));
         }
         return equalPwd;
     }
@@ -74,5 +78,25 @@ public class UserService {
                 .nickName(user.getNickname())
                 .major(user.getMajor())
                 .build();
+    }
+
+    @Transactional
+    public boolean logoutUser(LogoutRequest request) {
+        var user = userRepository.findById(request.getUserId()).orElseThrow();
+
+        revokeAllUserTokens(user);
+
+        return true;
+    }
+
+    private void revokeAllUserTokens(UserInfo user) {
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
     }
 }
