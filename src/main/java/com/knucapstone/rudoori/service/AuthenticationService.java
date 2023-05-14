@@ -91,12 +91,7 @@ public class AuthenticationService {
                 .orElseThrow(()-> new NullPointerException("존재하지 않는 계정입니다."));
         var jwtToken = jwtService.generateToken(user);
 
-        System.out.println("--------jwt---------");
-        System.out.println(jwtToken);
         var refreshToken = jwtService.generateRefreshToken(user);
-        System.out.println("--------refresh---------");
-        System.out.println(refreshToken);
-
         revokeAllUserTokens(user);
         saveUserToken(user,refreshToken);
         return AuthenticationResponse.builder()

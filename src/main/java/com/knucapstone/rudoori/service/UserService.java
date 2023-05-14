@@ -7,6 +7,7 @@ import com.knucapstone.rudoori.model.dto.Phw;
 import com.knucapstone.rudoori.model.dto.UserInfoResponse;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.UserRepository;
+import com.knucapstone.rudoori.token.Token;
 import com.knucapstone.rudoori.token.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -90,7 +92,7 @@ public class UserService {
     }
 
     private void revokeAllUserTokens(UserInfo user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
