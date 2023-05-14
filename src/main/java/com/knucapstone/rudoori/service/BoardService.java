@@ -27,12 +27,12 @@ public class BoardService {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String accessToken = httpRequest.getHeader("Authorization").substring(7);
         String jwtUserId = jwtService.extractUserId(accessToken);
-        UserInfo userId = userRepository.findById(jwtUserId)
+        UserInfo userInfo = userRepository.findById(jwtUserId)
                 .orElseThrow();
 
         Posts post = Posts.builder()
-                .userId(userId) // 외래 키 값
-                .writer(userId.getNickname()) // 외래 키의 닉네임 값
+                .userId(userInfo) // 외래 키 값
+                .writer(userInfo.getNickname()) // 외래 키의 닉네임 값
                 .title(request.getTitle())
                 .content(request.getContent())
                 .like(0)

@@ -55,7 +55,7 @@ public class UserService {
         }
         return equalPwd;
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public Phw.UserProfile getUserProfile(String userId) {
         UserInfo userInfo = userRepository.findByUserId(userId).get();
 
