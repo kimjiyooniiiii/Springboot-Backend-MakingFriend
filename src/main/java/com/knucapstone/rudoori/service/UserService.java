@@ -1,9 +1,12 @@
 package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
+import com.knucapstone.rudoori.model.dto.MentionDto;
 import com.knucapstone.rudoori.model.dto.Phw;
 import com.knucapstone.rudoori.model.dto.UserInfoResponse;
+import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.entity.UserInfo;
+import com.knucapstone.rudoori.repository.MentionRepository;
 import com.knucapstone.rudoori.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MentionRepository mentionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -74,5 +78,24 @@ public class UserService {
                 .nickName(user.getNickname())
                 .major(user.getMajor())
                 .build();
+    }
+
+        @Transactional
+    public MentionDto.MentionResponse mentionForMan(String yourId, MentionDto.MentionRequest mentionRequest) {
+        UserInfo findInfo = userRepository.findByUserId(yourId).get();
+
+        if(findInfo.isEnabled() && findInfo != null) {
+            Mention newM = new Mention(null, findInfo, mentionRequest.getContent());
+            mentionRepository.save(newM);
+
+            MentionDto.MentionResponse mentionResponse = MentionDto.MentionResponse.builder()
+                            .userId(yourId)
+                            .content(mentionRequest.getContent())
+                            .build();
+
+            return mentionResponse;
+        }
+
+        return null;
     }
 }
