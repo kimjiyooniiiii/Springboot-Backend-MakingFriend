@@ -1,9 +1,7 @@
 package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
-import com.knucapstone.rudoori.model.dto.MentionDto;
-import com.knucapstone.rudoori.model.dto.Phw;
-import com.knucapstone.rudoori.model.dto.UserInfoResponse;
+import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.MentionRepository;
@@ -15,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,6 +47,7 @@ public class UserService {
         String id = updatePwdInfo.getUserId();
         String pwd = updatePwdInfo.getPassword();
         String updatedPwd = updatePwdInfo.getUpdatedPwd();
+
         UserInfo userInfo = userRepository.findByUserId(id).get();
         String storedPwd = userInfo.getPassword();
         boolean equalPwd = passwordEncoder.matches(pwd, storedPwd);
@@ -80,22 +81,43 @@ public class UserService {
                 .build();
     }
 
-        @Transactional
-    public MentionDto.MentionResponse mentionForMan(String yourId, MentionDto.MentionRequest mentionRequest) {
-        UserInfo findInfo = userRepository.findByUserId(yourId).get();
+
+    @Transactional
+    public MentionResponse mentionForMan(String opponentId, MentionRequest mentionRequest) {
+        UserInfo findInfo = userRepository.findByUserId(opponentId).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
 
         if(findInfo.isEnabled() && findInfo != null) {
-            Mention newM = new Mention(null, findInfo, mentionRequest.getContent());
-            mentionRepository.save(newM);
+            Mention newMention = Mention.builder()
+                    .userId(findInfo)
+                    .content(mentionRequest.getContent())
+                    .build();
 
-            MentionDto.MentionResponse mentionResponse = MentionDto.MentionResponse.builder()
-                            .userId(yourId)
-                            .content(mentionRequest.getContent())
-                            .build();
+            mentionRepository.save(newMention);
 
-            return mentionResponse;
+            return MentionResponse.builder()
+                    .opponentNickName(findInfo.getNickname())
+                    .content(mentionRequest.getContent())
+                    .build();
         }
 
+        return null;
+    }
+
+    public List<String> showMentionList(String userId) {
+        UserInfo findInfo = userRepository.findByUserId(userId).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
+
+        if(findInfo.isEnabled() && findInfo != null) {
+            List<Mention> mentions = mentionRepository.findAllByUserId(findInfo);
+            List<String> contents = new ArrayList<>();
+
+            if(!mentions.isEmpty()) {
+                for(Mention mention : mentions) {
+                    contents.add(mention.getContent());
+                }
+
+                return contents;
+            }
+        }
         return null;
     }
 }
