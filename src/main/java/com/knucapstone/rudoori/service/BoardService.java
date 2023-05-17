@@ -58,21 +58,21 @@ public class BoardService {
                 .build();
     }
 
-//    @Transactional
-//    public BoardResponse getBoard(Long boardId) {
-//        System.out.println("---boardId출력");
-//        System.out.println(boardId);
-//        Posts post = boardRepository.findById(boardId).orElseThrow(NullPointerException::new);
-//        return BoardResponse
-//                .builder()
-//                .postId(post.getPostId())
-//                .writer(post.getWriter())
-//                .title(post.getTitle())
-//                .content(post.getContent())
-//                .likeCount(post.getLikeCount())
-//                .dislikeCount(post.getDislikeCount())
-//                .scrap(post.getScrap())
-//                .createdDt(post.getCreatedDt())
-//                .build();
-//    }
+    @Transactional
+    public BoardResponse getBoard(Long boardId) {
+        System.out.println("---boardId출력");
+        System.out.println(boardId);
+        Posts post = boardRepository.findById(boardId).orElseThrow(NullPointerException::new);
+        return BoardResponse
+                .builder()
+                .postId(post.getPostId())
+                .writer(post.getWriter())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .likeCount(post.getLikeCount())
+                .dislikeCount(post.getDislikeCount())
+                .scrap(post.getScrap())
+                .createdDt(post.getCreatedDt())
+                .build();
+    }
 }

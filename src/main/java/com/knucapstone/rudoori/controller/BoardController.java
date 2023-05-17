@@ -19,13 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
-//    @PostMapping()
-//    public ApiResponse<BoardResponse> createBoard(
-//            @RequestBody BoardCreateRequest request
-//    ){
-//        return ApiResponse.createSuccess(boardService.createBoard(request));
-//    }
-
     @PostMapping()
     public ApiResponse<BoardResponse> createBoard(
             @RequestBody BoardCreateRequest request,
@@ -33,9 +26,9 @@ public class BoardController {
     ){
         return ApiResponse.createSuccess(boardService.createBoard(request, userInfo));
     }
-//    @GetMapping("/{boardId}")
-//    public ApiResponse<BoardResponse> getBoard(@RequestParam Long boardId){
-//        return ApiResponse.createSuccess(boardService.getBoard(boardId));
-//    }
+    @GetMapping("/{boardId}")
+    public ApiResponse<BoardResponse> getBoard(@PathVariable("boardId") Long boardId){
+        return ApiResponse.createSuccess(boardService.getBoard(boardId));
+    }
 
 }
