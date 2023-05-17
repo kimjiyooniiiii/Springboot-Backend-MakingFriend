@@ -6,9 +6,10 @@ import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.MentionRepository;
 import com.knucapstone.rudoori.repository.UserRepository;
+import com.knucapstone.rudoori.token.Token;
+import com.knucapstone.rudoori.token.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +26,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final MentionRepository mentionRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+
+
+    private final TokenRepository tokenRepository;
 
     @Transactional
     public boolean deleteUser(Phw.LoginInfo loginInfo) {
@@ -56,7 +58,7 @@ public class UserService {
         }
         return equalPwd;
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public Phw.UserProfile getUserProfile(String userId) {
         UserInfo userInfo = userRepository.findByUserId(userId).get();
 
@@ -83,6 +85,26 @@ public class UserService {
 
 
     @Transactional
+    public boolean logoutUser(LogoutRequest request) {
+        var user = userRepository.findById(request.getUserId()).orElseThrow();
+
+        revokeAllUserTokens(user);
+
+        return true;
+    }
+
+    private void revokeAllUserTokens(UserInfo user) {
+        List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+    }
+
+    @Transactional
     public MentionResponse mentionForMan(String opponentId, MentionRequest mentionRequest) {
         UserInfo findInfo = userRepository.findByUserId(opponentId).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
 
@@ -104,14 +126,14 @@ public class UserService {
     }
 
     public List<String> showMentionList(String userId) {
-        UserInfo findInfo = userRepository.findByUserId(userId).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
+        UserInfo findInfo = userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        if(findInfo.isEnabled() && findInfo != null) {
+        if (findInfo.isEnabled() && findInfo != null) {
             List<Mention> mentions = mentionRepository.findAllByUserId(findInfo);
             List<String> contents = new ArrayList<>();
 
-            if(!mentions.isEmpty()) {
-                for(Mention mention : mentions) {
+            if (!mentions.isEmpty()) {
+                for (Mention mention : mentions) {
                     contents.add(mention.getContent());
                 }
 
@@ -120,4 +142,5 @@ public class UserService {
         }
         return null;
     }
+
 }

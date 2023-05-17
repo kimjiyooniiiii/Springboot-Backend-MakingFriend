@@ -7,13 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class MentionRequest {
-
-    //{
-    //  "content" : "사람이 착해요~~
-    //}
-
-    private String content;
+@AllArgsConstructor
+public class LogoutRequest {
+    private String userId;
 }

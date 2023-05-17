@@ -1,4 +1,5 @@
-package com.knucapstone.rudoori.model.dto;
+package com.knucapstone.rudoori.model.dto.Board;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,13 +8,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class MentionRequest {
+@AllArgsConstructor
+public class BoardRequest {
 
-    //{
-    //  "content" : "사람이 착해요~~
-    //}
-
+    private String title;
     private String content;
+//    private String media;
 }

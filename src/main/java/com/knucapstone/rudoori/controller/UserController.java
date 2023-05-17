@@ -28,7 +28,7 @@ public class UserController {
     private final UserService userService;
 
 
-    @DeleteMapping("/user/quit")
+    @DeleteMapping("/quit")
     public boolean deleteUser(@RequestBody Phw.LoginInfo LoginInfo){
         return userService.deleteUser(LoginInfo);
     }
@@ -38,8 +38,7 @@ public class UserController {
         return ApiResponse.createSuccess(userService.getInfo(userId));
     }
 
-
-    @PatchMapping("/user/pwd")
+    @PatchMapping("/pwd")
     public boolean updatePwd(@RequestBody Phw.UpdatePwdInfo updatePwdInfo){
         return userService.updatePwd(updatePwdInfo);
     }
@@ -47,6 +46,11 @@ public class UserController {
     @GetMapping("/profile/{userId}")
     public Phw.UserProfile getUserProfile(@PathVariable("userId")String userId) {
         return userService.getUserProfile(userId);
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse logoutUser(@RequestBody LogoutRequest logoutRequest){
+        return ApiResponse.createSuccess(userService.logoutUser(logoutRequest));
     }
 
     @PostMapping("/write/mention/{opponentId}")
@@ -58,5 +62,7 @@ public class UserController {
     public ApiResponse<List<String>> showMentionList(@PathVariable("userId")String userId) {
         return ApiResponse.createSuccess(userService.showMentionList(userId));
     }
+
+
 }
 

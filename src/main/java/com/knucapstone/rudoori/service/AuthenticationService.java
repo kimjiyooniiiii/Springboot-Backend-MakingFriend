@@ -89,8 +89,8 @@ public class AuthenticationService {
         );
         var user = userRepository.findById(request.getUserId())
                 .orElseThrow(()-> new NullPointerException("존재하지 않는 계정입니다."));
-
         var jwtToken = jwtService.generateToken(user);
+
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user,refreshToken);
@@ -99,8 +99,6 @@ public class AuthenticationService {
                 .refreshToken(refreshToken)
                 .build();
     }
-
-
 
     public void refreshToken(
             HttpServletRequest request,
