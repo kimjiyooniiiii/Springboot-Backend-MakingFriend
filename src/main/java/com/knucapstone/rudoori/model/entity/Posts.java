@@ -18,12 +18,13 @@ public class Posts {
     // media 관련 추가해야 함
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
     private String title;
     private String content;
     private String writer;
-    private int like;
-    private int dislike;
+    private int likeCount;
+    private int dislikeCount;
     private int scrap;
     @CreationTimestamp
     @Column(updatable = false)

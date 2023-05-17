@@ -20,8 +20,8 @@ public class BoardResponse {
     private String title;
     private String content;
     private String writer;
-    private int like;
-    private int dislike;
+    private int likeCount;
+    private int dislikeCount;
     private int scrap;
     private LocalDateTime createdDt;
 //    private String media;

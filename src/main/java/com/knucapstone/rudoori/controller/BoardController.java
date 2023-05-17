@@ -6,9 +6,11 @@ import com.knucapstone.rudoori.model.dto.AuthenticationResponse;
 import com.knucapstone.rudoori.model.dto.Board.BoardCreateRequest;
 import com.knucapstone.rudoori.model.dto.Board.BoardResponse;
 import com.knucapstone.rudoori.model.dto.UserInfoResponse;
+import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.service.AuthenticationService;
 import com.knucapstone.rudoori.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,16 +19,23 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
-    @PostMapping()
-    public ApiResponse<Boolean> createBoard(
-            @RequestBody BoardCreateRequest request
-    ){
-        return ApiResponse.createSuccess(boardService.createBoard(request));
-    }
+//    @PostMapping()
+//    public ApiResponse<BoardResponse> createBoard(
+//            @RequestBody BoardCreateRequest request
+//    ){
+//        return ApiResponse.createSuccess(boardService.createBoard(request));
+//    }
 
-    @GetMapping("/{boardId}")
-    public ApiResponse<BoardResponse> getBoard(@RequestParam Long boardId){
-        return ApiResponse.createSuccess(boardService.getBoard(boardId));
+    @PostMapping()
+    public ApiResponse<BoardResponse> createBoard(
+            @RequestBody BoardCreateRequest request,
+            @AuthenticationPrincipal UserInfo userInfo
+    ){
+        return ApiResponse.createSuccess(boardService.createBoard(request, userInfo));
     }
+//    @GetMapping("/{boardId}")
+//    public ApiResponse<BoardResponse> getBoard(@RequestParam Long boardId){
+//        return ApiResponse.createSuccess(boardService.getBoard(boardId));
+//    }
 
 }
