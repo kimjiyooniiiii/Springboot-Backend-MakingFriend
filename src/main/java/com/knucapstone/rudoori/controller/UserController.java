@@ -32,7 +32,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     @DeleteMapping("/quit")
     public boolean deleteUser(@RequestBody UserInfoDto loginInfo) {
         return userService.deleteUser(loginInfo);
