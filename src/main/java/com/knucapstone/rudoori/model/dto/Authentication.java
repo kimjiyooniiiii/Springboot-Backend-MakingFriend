@@ -1,5 +1,6 @@
 package com.knucapstone.rudoori.model.dto;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -11,7 +12,9 @@ public class Authentication {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AuthenticationRequest {
+        @NotNull
         private String userId;
+        @NotNull
         private String password;
     }
 
@@ -36,13 +39,21 @@ public class Authentication {
 //    }
         @Pattern(regexp = "^20\\d{7}$", message = "9자리의 숫자만 입력가능합니다")
         private String userId;
+        @NotNull
         private String userName;
+        @NotNull
         private String birthday;
+        @NotNull
         private String gender;
+        @NotNull
         private String major;
+        @NotNull
         private String nickname;
+        @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$", message = "이메일 형식이 맞지않습니다.")
         private String userMail;
+        @NotNull
         private String password;
+        @Pattern(regexp = "^01([0|1|6|7|9])-?([0-9]{3,4})-?([0-9]{4})$", message = "휴대폰 번호가 형식에 맞지 않습니다.")
         private String phoneNumber;
     }
 

@@ -32,15 +32,17 @@ public class ApiResponse<T> {
     // Hibernate Validator에 의해 유효하지 않은 데이터로 인해 API 호출이 거부될때 반환
     public static ApiResponse<?> createFail(BindingResult bindingResult){
         Map<String, String> errors = new HashMap<>();
+        String message= null;
         List<ObjectError> allErrors = bindingResult.getAllErrors();
         for(ObjectError error : allErrors){
             if(error instanceof FieldError){
                 errors.put(((FieldError) error).getField(), error.getDefaultMessage());
+                message = error.getDefaultMessage();
             }else{
                 errors.put(error.getObjectName(), error.getDefaultMessage());
             }
         }
-        return new ApiResponse<>(FAIL_STATUS, errors, null);
+        return new ApiResponse<>(FAIL_STATUS, errors, message);
     }
 
     public static ApiResponse<?> createError(String message){

@@ -1,20 +1,12 @@
 package com.knucapstone.rudoori.controller;
 
 
-import com.knucapstone.rudoori.model.dto.Phw;
-import com.knucapstone.rudoori.model.entity.UserInfo;
-import com.knucapstone.rudoori.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 import com.knucapstone.rudoori.common.ApiResponse;
-import com.knucapstone.rudoori.model.dto.UserInfoResponse;
+import com.knucapstone.rudoori.model.dto.Phw;
+import com.knucapstone.rudoori.model.dto.User;
 import com.knucapstone.rudoori.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -31,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ApiResponse<UserInfoResponse> getUserInfo(@RequestParam String userId){
+    public ApiResponse<User.UserInfoResponse> getUserInfo(@RequestParam String userId){
         return ApiResponse.createSuccess(userService.getInfo(userId));
     }
 
