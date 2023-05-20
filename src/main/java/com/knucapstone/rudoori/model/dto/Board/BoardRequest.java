@@ -1,4 +1,5 @@
-package com.knucapstone.rudoori.model.dto;
+package com.knucapstone.rudoori.model.dto.Board;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationRequest {
-    private String userId;
-    private String password;
+public class BoardRequest {
+
+    private String title;
+    private String content;
+//    private String media;
 }

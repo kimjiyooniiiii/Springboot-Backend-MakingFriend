@@ -1,22 +1,13 @@
 package com.knucapstone.rudoori.model.entity;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.knucapstone.rudoori.model.dto.UserInfoDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +20,8 @@ import java.util.List;
 public class UserInfo implements UserDetails{
     @Id
     private String userId;
-    private String userName;
+    @Column(name = "user_name")
+    private String name;
     private String birthday;
     private String gender;
     private String phoneNumber;
@@ -38,8 +30,9 @@ public class UserInfo implements UserDetails{
     private String email;
     private String nickname;
     private String password;
-    @CreatedDate
-    private Date createdAt;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
     private Boolean isUsed;
     private Boolean isBlocked;
     @Enumerated(EnumType.STRING)

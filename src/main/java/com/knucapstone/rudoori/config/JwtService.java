@@ -24,6 +24,9 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
+
     /**
      * token의 Subject값으로 반환
      * jwt 생성시 subject 값을 UserId로 생성
@@ -39,16 +42,27 @@ public class JwtService {
     }
     public String generateToken(Map<String, Object> extraClaims,
                                 UserDetails userDetails){
+        return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails){
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    }
+
+
+    public String buildToken(Map<String, Object> extraClaims,
+                             UserDetails userDetails,
+                             long expiration){
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() +jwtExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
-    }
 
+    }
     /**
      * 토큰 내의 모든 Claims 추출
      * @param token
@@ -72,7 +86,7 @@ public class JwtService {
         return (userId.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
