@@ -1,9 +1,13 @@
 package com.knucapstone.rudoori.service;
 
+import com.knucapstone.rudoori.common.expection.NonSelfException;
+import com.knucapstone.rudoori.common.expection.SelfException;
 import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Mention;
+import com.knucapstone.rudoori.model.entity.Score;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.MentionRepository;
+import com.knucapstone.rudoori.repository.ScoreRepository;
 import com.knucapstone.rudoori.repository.UserRepository;
 import com.knucapstone.rudoori.token.Token;
 import com.knucapstone.rudoori.token.TokenRepository;
@@ -22,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final MentionRepository mentionRepository;
+    private final ScoreRepository scoreRepository;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -82,7 +87,7 @@ public class UserService {
 
     @Transactional
     public boolean logoutUser(LogoutRequest request) {
-        var user = userRepository.findById(request.getUserId()).orElseThrow();
+        var user = userRepository.findById(request.getUserId()).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
 
         revokeAllUserTokens(user);
 
@@ -104,7 +109,7 @@ public class UserService {
     public MentionResponse mentionForMan(String opponentId, MentionRequest mentionRequest) {
         UserInfo findInfo = userRepository.findByUserId(opponentId).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        if(findInfo.isEnabled() && findInfo != null) {
+        if(findInfo.isEnabled()) {
             Mention newMention = Mention.builder()
                     .userId(findInfo)
                     .content(mentionRequest.getContent())
@@ -124,7 +129,7 @@ public class UserService {
     public List<String> showMentionList(String userId) {
         UserInfo findInfo = userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        if (findInfo.isEnabled() && findInfo != null) {
+        if (findInfo.isEnabled()) {
             List<Mention> mentions = mentionRepository.findAllByUserId(findInfo);
             List<String> contents = new ArrayList<>();
 
@@ -138,4 +143,50 @@ public class UserService {
         }
         return null;
     }
+
+    @Transactional
+    public ScoreResponse scoreForMan(String opponentId, ScoreRequest scoreRequest, UserInfo userinfo) {
+        UserInfo opponent = userRepository.findByUserId(opponentId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+        UserInfo user = userRepository.findByUserId(userinfo.getUserId()).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+
+        if (!opponentId.equals(user.getUserId())) {
+
+            // opponentIdCount: score db에서 찾은 현재까지의 opponentId의 개수
+            long opponentIdCount;
+
+            if (!scoreRepository.findByOpponentId(opponentId).isEmpty()) {
+                opponentIdCount = scoreRepository.countByOpponentId(opponentId);
+            } else {
+                opponentIdCount = 0L;
+            }
+
+            // avgGrade(평균값): ((opponentIdCount * 현재까지 opponent의 점수) + 더할 점수) / opponentIdCount + 방금 추가한 개수;
+            double avgGrade;
+
+            if (opponent.getScore() != null) {
+                avgGrade = ((opponentIdCount * opponent.getScore()) + scoreRequest.getGrade()) / (opponentIdCount + 1);
+            } else {
+                avgGrade = scoreRequest.getGrade();
+            }
+
+            Score saveScore = Score.builder()
+                    .userId(user)
+                    .opponentId(opponent.getUserId())
+                    .grade(scoreRequest.getGrade())
+                    .build();
+
+            opponent.setScore(avgGrade);
+
+            scoreRepository.save(saveScore);
+
+            return ScoreResponse.builder()
+                    .opponentNickName(opponent.getNickname())
+                    .opponentGrade(opponent.getScore())
+                    .build();
+        } else {
+            throw new SelfException("자신은 평가할 수 없습니다!");
+        }
+    }
+
+
 }

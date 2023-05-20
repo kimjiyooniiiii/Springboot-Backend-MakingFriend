@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface MentionRepository extends JpaRepository<Mention, Long> {
     List<Mention> findAllByUserId(UserInfo userId);
+
 }

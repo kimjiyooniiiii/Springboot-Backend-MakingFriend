@@ -1,6 +1,7 @@
 package com.knucapstone.rudoori.common;
 
 import com.knucapstone.rudoori.common.expection.NonSelfException;
+import com.knucapstone.rudoori.common.expection.SelfException;
 import com.sun.jdi.request.DuplicateRequestException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,11 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler(NonSelfException.class)
     public ResponseEntity<ApiResponse<?>> handleNonSelfException(RuntimeException exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError(exception.getMessage()));
+    }
+
+    @ExceptionHandler(SelfException.class)
+    public ResponseEntity<ApiResponse<?>> handleSelfException(RuntimeException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError(exception.getMessage()));
     }
 }

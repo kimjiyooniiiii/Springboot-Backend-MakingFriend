@@ -6,6 +6,7 @@ import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.knucapstone.rudoori.common.ApiResponse;
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse logoutUser(@RequestBody LogoutRequest logoutRequest){
+    public ApiResponse<Boolean> logoutUser(@RequestBody LogoutRequest logoutRequest){
         return ApiResponse.createSuccess(userService.logoutUser(logoutRequest));
     }
     @PostMapping("/write/mention/{opponentId}")
@@ -60,6 +61,12 @@ public class UserController {
     public ApiResponse<List<String>> showMentionList(@PathVariable("userId")String userId) {
         return ApiResponse.createSuccess(userService.showMentionList(userId));
     }
-    
+
+    @PostMapping("/score/{opponentId}")
+    public ApiResponse<ScoreResponse> scoreForMan(@PathVariable("opponentId")String opponentId, @RequestBody ScoreRequest scoreRequest,  @AuthenticationPrincipal UserInfo userinfo){
+        return ApiResponse.createSuccess(userService.scoreForMan(opponentId, scoreRequest, userinfo));
+    }
+
+
 }
 
