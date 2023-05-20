@@ -1,10 +1,8 @@
 package com.knucapstone.rudoori.controller;
 
-import com.knucapstone.rudoori.model.dto.Phw;
-import com.knucapstone.rudoori.model.entity.UserInfo;
+import com.knucapstone.rudoori.model.dto.UserInfoDto;
 import com.knucapstone.rudoori.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,17 +13,17 @@ public class UserController {
     private final UserService userService;
 
     @DeleteMapping("/user/quit")
-    public boolean deleteUser(@RequestBody Phw.LoginInfo LoginInfo){
-        return userService.deleteUser(LoginInfo);
+    public boolean deleteUser(@RequestBody UserInfoDto loginInfo){
+        return userService.deleteUser(loginInfo);
     }
 
     @PatchMapping("/user/pwd")
-    public boolean updatePwd(@RequestBody Phw.UpdatePwdInfo updatePwdInfo){
+    public boolean updatePwd(@RequestBody UserInfoDto updatePwdInfo){
         return userService.updatePwd(updatePwdInfo);
     }
 
     @GetMapping("/profile/{userId}")
-    public Phw.UserProfile getUserProfile(@PathVariable("userId")String userId) {
+    public UserInfoDto getUserProfile(@PathVariable("userId")String userId) {
         return userService.getUserProfile(userId);
     }
 }
