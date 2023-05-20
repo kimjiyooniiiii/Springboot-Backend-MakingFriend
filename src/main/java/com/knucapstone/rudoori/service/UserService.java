@@ -1,6 +1,8 @@
 package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
+import com.knucapstone.rudoori.model.dto.Phw;
+import com.knucapstone.rudoori.model.dto.User;
 import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.entity.UserInfo;
@@ -13,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @Slf4j
@@ -70,9 +72,9 @@ public class UserService {
         return userProfile;
     }
 
-    public UserInfoResponse getInfo(String userId) {
+    public User.UserInfoResponse getInfo(String userId) {
         UserInfo user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
-        return UserInfoResponse
+        return User.UserInfoResponse
                 .builder()
                 .userId(user.getUserId())
                 .userName(user.getUsername())

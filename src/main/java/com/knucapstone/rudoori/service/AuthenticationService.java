@@ -2,9 +2,7 @@ package com.knucapstone.rudoori.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knucapstone.rudoori.config.JwtService;
-import com.knucapstone.rudoori.model.dto.AuthenticationRequest;
-import com.knucapstone.rudoori.model.dto.AuthenticationResponse;
-import com.knucapstone.rudoori.model.dto.RegisterRequest;
+import com.knucapstone.rudoori.model.dto.Authentication;
 import com.knucapstone.rudoori.model.entity.Role;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.UserRepository;
@@ -44,7 +42,7 @@ public class AuthenticationService {
      * @return
      */
     @Transactional
-    public AuthenticationResponse register(RegisterRequest request) {
+    public Authentication.AuthenticationResponse register(Authentication.RegisterRequest request) {
 
         Optional<UserInfo> info = userRepository.findById(request.getUserId());
 
@@ -54,7 +52,7 @@ public class AuthenticationService {
 
         UserInfo user = UserInfo.builder()
                 .userId(request.getUserId())
-                .userName(request.getUserName())
+                .name(request.getUserName())
                 .birthday(request.getBirthday())
                 .gender(request.getGender())
                 .email(request.getUserMail())
@@ -70,7 +68,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, refreshToken);
-        return AuthenticationResponse.builder()
+        return Authentication.AuthenticationResponse.builder()
                         .accessToken(jwtToken)
                         .refreshToken(refreshToken)
                         .build();
@@ -79,7 +77,7 @@ public class AuthenticationService {
 
 
     @Transactional
-    public AuthenticationResponse authenticate(AuthenticationRequest request)
+    public Authentication.AuthenticationResponse authenticate(Authentication.AuthenticationRequest request)
     {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -94,7 +92,7 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user,refreshToken);
-        return AuthenticationResponse.builder()
+        return Authentication.AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -119,7 +117,7 @@ public class AuthenticationService {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
+                var authResponse = Authentication.AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();

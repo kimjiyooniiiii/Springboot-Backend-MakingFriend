@@ -1,12 +1,11 @@
 package com.knucapstone.rudoori.controller;
 
 import com.knucapstone.rudoori.common.ApiResponse;
-import com.knucapstone.rudoori.model.dto.AuthenticationRequest;
-import com.knucapstone.rudoori.model.dto.AuthenticationResponse;
-import com.knucapstone.rudoori.model.dto.RegisterRequest;
+import com.knucapstone.rudoori.model.dto.Authentication;
 import com.knucapstone.rudoori.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,15 +23,15 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+    public ResponseEntity<Authentication.AuthenticationResponse> register(
+            @Valid @RequestBody Authentication.RegisterRequest request
     ){
         return ResponseEntity.ok(service.register(request));
     }
 
     @PostMapping("/login")
-    public ApiResponse<AuthenticationResponse> login(
-            @RequestBody AuthenticationRequest request
+    public ApiResponse<Authentication.AuthenticationResponse> login(
+            @RequestBody Authentication.AuthenticationRequest request
     ){
         return ApiResponse.createSuccess(service.authenticate(request));
     }

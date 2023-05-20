@@ -1,6 +1,6 @@
 package com.knucapstone.rudoori.common;
 
-import com.knucapstone.rudoori.common.expection.NonSelfException;
+
 import com.sun.jdi.request.DuplicateRequestException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -27,9 +27,9 @@ public class CommonExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleNullPointerException(RuntimeException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError(exception.getMessage()));
     }
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<ApiResponse<?>> handExpiredJwtException(RuntimeException exception){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.createError("exception"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.createError(exception.getMessage()));
     }
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse<?>> handleAuthenticationException(RuntimeException exception){

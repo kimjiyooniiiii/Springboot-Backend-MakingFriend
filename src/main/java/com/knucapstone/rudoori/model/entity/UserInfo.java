@@ -20,7 +20,8 @@ import java.util.List;
 public class UserInfo implements UserDetails{
     @Id
     private String userId;
-    private String userName;
+    @Column(name = "user_name")
+    private String name;
     private String birthday;
     private String gender;
     private String phoneNumber;
