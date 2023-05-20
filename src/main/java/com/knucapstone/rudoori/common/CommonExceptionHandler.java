@@ -1,6 +1,7 @@
 package com.knucapstone.rudoori.common;
 
 
+import com.knucapstone.rudoori.common.expection.NonSelfException;
 import com.sun.jdi.request.DuplicateRequestException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;

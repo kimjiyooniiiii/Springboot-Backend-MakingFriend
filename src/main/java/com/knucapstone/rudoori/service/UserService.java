@@ -1,7 +1,6 @@
 package com.knucapstone.rudoori.service;
 
 import com.knucapstone.rudoori.config.JwtService;
-import com.knucapstone.rudoori.model.dto.Phw;
 import com.knucapstone.rudoori.model.dto.User;
 import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Mention;
@@ -30,8 +29,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final MentionRepository mentionRepository;
     private final PasswordEncoder passwordEncoder;
-
-
     private final TokenRepository tokenRepository;
 
     @Transactional
