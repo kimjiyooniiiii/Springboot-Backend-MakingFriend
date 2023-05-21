@@ -1,9 +1,7 @@
 package com.knucapstone.rudoori.controller;
 
 
-
 import com.knucapstone.rudoori.common.ApiResponse;
-import com.knucapstone.rudoori.model.dto.Phw;
 import com.knucapstone.rudoori.model.dto.User;
 import com.knucapstone.rudoori.model.entity.Block;
 import jakarta.validation.Valid;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.entity.UserInfo;
+import com.knucapstone.rudoori.model.dto.UserInfoDto;
 import com.knucapstone.rudoori.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,39 +34,38 @@ public class UserController {
 
     private final UserService userService;
 
-
     @DeleteMapping("/quit")
-    public boolean deleteUser(@RequestBody Phw.LoginInfo LoginInfo){
-        return userService.deleteUser(LoginInfo);
-    }
-
-    @GetMapping("/info")
-    public ApiResponse<User.UserInfoResponse> getUserInfo(@RequestParam String userId){
-        return ApiResponse.createSuccess(userService.getInfo(userId));
+    public boolean deleteUser(@RequestBody UserInfoDto loginInfo) {
+        return userService.deleteUser(loginInfo);
     }
 
     @PatchMapping("/pwd")
-    public boolean updatePwd(@RequestBody Phw.UpdatePwdInfo updatePwdInfo){
+    public boolean updatePwd(@RequestBody UserInfoDto updatePwdInfo) {
         return userService.updatePwd(updatePwdInfo);
     }
 
     @GetMapping("/profile/{userId}")
-    public Phw.UserProfile getUserProfile(@PathVariable("userId")String userId) {
+    public UserInfoDto getUserProfile(@PathVariable("userId") String userId) {
         return userService.getUserProfile(userId);
     }
 
+    @GetMapping("/info")
+    public ApiResponse<User.UserInfoResponse> getUserInfo(@RequestParam String userId) {
+        return ApiResponse.createSuccess(userService.getInfo(userId));
+    }
+
     @PostMapping("/logout")
-    public ApiResponse logoutUser(@RequestBody LogoutRequest logoutRequest){
+    public ApiResponse logoutUser(@RequestBody LogoutRequest logoutRequest) {
         return ApiResponse.createSuccess(userService.logoutUser(logoutRequest));
     }
 
     @PostMapping("/write/mention/{opponentId}")
-    public ApiResponse<MentionResponse> mentionForMan(@PathVariable("opponentId")String opponentId, @RequestBody MentionRequest mentionRequest) {
+    public ApiResponse<MentionResponse> mentionForMan(@PathVariable("opponentId") String opponentId, @RequestBody MentionRequest mentionRequest) {
         return ApiResponse.createSuccess(userService.mentionForMan(opponentId, mentionRequest));
     }
 
     @GetMapping("/read/mentions/{userId}")
-    public ApiResponse<List<String>> showMentionList(@PathVariable("userId")String userId) {
+    public ApiResponse<List<String>> showMentionList(@PathVariable("userId") String userId) {
         return ApiResponse.createSuccess(userService.showMentionList(userId));
     }
 

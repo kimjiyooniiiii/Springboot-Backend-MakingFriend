@@ -1,8 +1,9 @@
 package com.knucapstone.rudoori.service;
-
+import com.knucapstone.rudoori.model.dto.User;
 import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Block;
 import com.knucapstone.rudoori.model.entity.Mention;
+import com.knucapstone.rudoori.model.dto.UserInfoDto;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.BlockRepository;
 import com.knucapstone.rudoori.repository.MentionRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -28,50 +30,59 @@ public class UserService {
     private final UserRepository userRepository;
     private final MentionRepository mentionRepository;
     private final PasswordEncoder passwordEncoder;
-
-
     private final TokenRepository tokenRepository;
     private final BlockRepository blockRepository;
 
     @Transactional
-    public boolean deleteUser(Phw.LoginInfo loginInfo) {
-        String id = loginInfo.getUserId();
+    public boolean deleteUser(UserInfoDto loginInfo) {
+        String userId = loginInfo.getUserId();
         String pwd = loginInfo.getPassword();
-
-        UserInfo userInfo = userRepository.findByUserId(id).get();
-        String storedPwd = userInfo.getPassword();
-        boolean equalPwd = passwordEncoder.matches(pwd, storedPwd);
-        if (equalPwd) {
-            userRepository.deleteById(id);
+        boolean equalPwd = false;
+        UserInfo userInfo = userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+        if (userInfo.isEnabled() && userInfo != null) {
+            String storedPwd = userInfo.getPassword();
+            equalPwd = passwordEncoder.matches(pwd, storedPwd);
+            if (equalPwd) {
+                userRepository.deleteById(userId);
+            }
+            return equalPwd;
         }
         return equalPwd;
+
     }
 
     @Transactional
-    public boolean updatePwd(Phw.UpdatePwdInfo updatePwdInfo) {
-        String id = updatePwdInfo.getUserId();
+    public boolean updatePwd(UserInfoDto updatePwdInfo) {
+        String userId = updatePwdInfo.getUserId();
         String pwd = updatePwdInfo.getPassword();
         String updatedPwd = updatePwdInfo.getUpdatedPwd();
-
-        UserInfo userInfo = userRepository.findByUserId(id).get();
-        String storedPwd = userInfo.getPassword();
-        boolean equalPwd = passwordEncoder.matches(pwd, storedPwd);
-        if (equalPwd) {
-            userInfo.setPassword(passwordEncoder.encode(updatedPwd));
+        boolean equalPwd = false;
+        UserInfo userInfo = userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+        if (userInfo.isEnabled() && userInfo != null) {
+            String storedPwd = userInfo.getPassword();
+            equalPwd = passwordEncoder.matches(pwd, storedPwd);
+            if (equalPwd) {
+                userInfo.setPassword(passwordEncoder.encode(updatedPwd));
+            }
+            return equalPwd;
         }
         return equalPwd;
     }
 
-    @Transactional
-    public Phw.UserProfile getUserProfile(String userId) {
-        UserInfo userInfo = userRepository.findByUserId(userId).get();
 
-        Phw.UserProfile userProfile = Phw.UserProfile.builder()
-                .major(userInfo.getMajor())
-                .nickname(userInfo.getNickname())
-                .score(userInfo.getScore())
-                .build();
-        return userProfile;
+    @Transactional(readOnly = true)
+    public UserInfoDto getUserProfile(String userId) {
+        UserInfo userInfo = userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+        if (userInfo.isEnabled() && userInfo != null) {
+
+            UserInfoDto userProfile = UserInfoDto.builder()
+                    .major(userInfo.getMajor())
+                    .nickname(userInfo.getNickname())
+                    .score(userInfo.getScore())
+                    .build();
+            return userProfile;
+        }
+        return null;
     }
 
     public User.UserInfoResponse getInfo(String userId) {
