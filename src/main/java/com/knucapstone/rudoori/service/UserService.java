@@ -196,12 +196,8 @@ public class UserService {
 
         String gradeString;
 
-//        double userScore = user.getScore() != null ? user.getScore() : 0.0;
-
         Optional<Double> score = Optional.ofNullable(user.getScore());
-        System.out.println("score: "+ score);
         double userScore = score.orElse(0.0);
-        System.out.println("userScore: "+ userScore);
 
         if (Double.compare(userScore, 4.5) >= 0) {
             gradeString = "A+";
