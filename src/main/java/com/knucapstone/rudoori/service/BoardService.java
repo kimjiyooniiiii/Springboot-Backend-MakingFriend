@@ -5,12 +5,18 @@ import com.knucapstone.rudoori.model.dto.Board.BoardRequest;
 import com.knucapstone.rudoori.model.dto.Board.BoardResponse;
 import com.knucapstone.rudoori.model.entity.Posts;
 import com.knucapstone.rudoori.model.entity.UserInfo;
+import com.knucapstone.rudoori.repository.BoardJpaRepository;
 import com.knucapstone.rudoori.repository.BoardRepository;
 import com.knucapstone.rudoori.repository.UserRepository;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -18,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardJpaRepository boardJpaRepository;
     private final UserRepository userRepository;
 
 
@@ -108,4 +115,22 @@ public class BoardService {
         }
     }
 
+    public List<BoardResponse> getBoardList(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<Posts> post = boardJpaRepository.findPage(size, page);
+        List<BoardResponse> boardResponses = new ArrayList<>();
+        for(Posts p : post){
+            boardResponses.add(BoardResponse.builder()
+                            .postId(p.getPostId())
+                            .title(p.getTitle())
+                            .content(p.getContent())
+                            .writer(p.getWriter())
+                            .likeCount(p.getLikeCount())
+                            .dislikeCount(p.getDislikeCount())
+                            .scrap(p.getScrap())
+                            .createdDt(p.getCreatedDt())
+                    .build());
+        }
+        return boardResponses;
+    }
 }
