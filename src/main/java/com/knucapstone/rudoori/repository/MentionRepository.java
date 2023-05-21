@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface MentionRepository extends JpaRepository<Mention, Long> {
     List<Mention> findAllByUserId(UserInfo userId);
+
+
+//    long countByOpponentId(String columnId);
+
 }

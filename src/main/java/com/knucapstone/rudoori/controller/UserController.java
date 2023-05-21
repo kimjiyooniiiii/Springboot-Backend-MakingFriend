@@ -1,23 +1,15 @@
 package com.knucapstone.rudoori.controller;
 
-
 import com.knucapstone.rudoori.common.ApiResponse;
 import com.knucapstone.rudoori.model.dto.User;
-import com.knucapstone.rudoori.model.entity.Block;
+import com.knucapstone.rudoori.model.entity.UserInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.knucapstone.rudoori.model.dto.*;
-import com.knucapstone.rudoori.model.entity.Mention;
-import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.model.dto.UserInfoDto;
 import com.knucapstone.rudoori.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.knucapstone.rudoori.common.ApiResponse;
-import com.knucapstone.rudoori.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,10 +47,9 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse logoutUser(@RequestBody LogoutRequest logoutRequest) {
+    public ApiResponse<Boolean> logoutUser(@RequestBody LogoutRequest logoutRequest){
         return ApiResponse.createSuccess(userService.logoutUser(logoutRequest));
     }
-
     @PostMapping("/write/mention/{opponentId}")
     public ApiResponse<MentionResponse> mentionForMan(@PathVariable("opponentId") String opponentId, @RequestBody MentionRequest mentionRequest) {
         return ApiResponse.createSuccess(userService.mentionForMan(opponentId, mentionRequest));
@@ -70,8 +61,18 @@ public class UserController {
     }
 
     @PostMapping("/block/person")
-    public ApiResponse<User.BlockResponse> blockUserId(@RequestBody @Valid User.BlockRequest blockRequest){
+    public ApiResponse<User.BlockResponse> blockUserId(@RequestBody @Valid User.BlockRequest blockRequest) {
         return ApiResponse.createSuccess(userService.blockUserId(blockRequest));
+    }
+
+    @PostMapping("/score/{opponentId}")
+    public ApiResponse<ScoreResponse> scoreForMan(@PathVariable("opponentId")String opponentId, @RequestBody ScoreRequest scoreRequest,  @AuthenticationPrincipal UserInfo userinfo){
+        return ApiResponse.createSuccess(userService.scoreForMan(opponentId, scoreRequest, userinfo));
+    }
+
+    @GetMapping("/info/score")
+    public ApiResponse<UserScoreResponse> getUserMannerScore(@AuthenticationPrincipal UserInfo userinfo){
+        return ApiResponse.createSuccess(userService.getUserMannerScore(userinfo));
     }
 }
 

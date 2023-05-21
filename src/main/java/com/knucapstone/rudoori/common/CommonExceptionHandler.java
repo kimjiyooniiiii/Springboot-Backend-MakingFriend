@@ -1,7 +1,5 @@
 package com.knucapstone.rudoori.common;
 
-
-import com.knucapstone.rudoori.common.expection.NonSelfException;
 import com.sun.jdi.request.DuplicateRequestException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -37,8 +35,4 @@ public class CommonExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.createError("비밀번호 혹은 로그인 입력 오류"));
     }
 
-    @ExceptionHandler(NonSelfException.class)
-    public ResponseEntity<ApiResponse<?>> handleNonSelfException(RuntimeException exception){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.createError(exception.getMessage()));
-    }
 }
