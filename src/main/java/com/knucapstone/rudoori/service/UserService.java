@@ -1,7 +1,6 @@
 package com.knucapstone.rudoori.service;
 
-import com.knucapstone.rudoori.common.expection.NonSelfException;
-import com.knucapstone.rudoori.common.expection.SelfException;
+import com.knucapstone.rudoori.model.dto.Phw;
 import com.knucapstone.rudoori.model.dto.*;
 import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.entity.Score;
@@ -19,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -184,9 +185,50 @@ public class UserService {
                     .opponentGrade(opponent.getScore())
                     .build();
         } else {
-            throw new SelfException("자신은 평가할 수 없습니다!");
+            throw new RuntimeException("자신은 평가할 수 없습니다!");
         }
     }
 
+    @Transactional
+    public UserScoreResponse getUserMannerScore(UserInfo userinfo) {
+
+        UserInfo user = userRepository.findByUserId(userinfo.getUserId()).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+
+        String gradeString;
+
+//        double userScore = user.getScore() != null ? user.getScore() : 0.0;
+
+        Optional<Double> score = Optional.ofNullable(user.getScore());
+        System.out.println("score: "+ score);
+        double userScore = score.orElse(0.0);
+        System.out.println("userScore: "+ userScore);
+
+        if (Double.compare(userScore, 4.5) >= 0) {
+            gradeString = "A+";
+        } else if (Double.compare(userScore, 4.5) < 0 && Double.compare(userScore, 4.0) >= 0) {
+            gradeString = "A";
+        } else if (Double.compare(userScore, 4.0) < 0 && Double.compare(userScore, 3.5) >= 0) {
+            gradeString = "B+";
+        } else if (Double.compare(userScore, 3.5) < 0 && Double.compare(userScore, 3.0) >= 0) {
+            gradeString = "B";
+        } else if (Double.compare(userScore, 3.0) < 0 && Double.compare(userScore, 2.5) >= 0) {
+            gradeString = "C+";
+        } else if (Double.compare(userScore, 2.5) < 0 && Double.compare(userScore, 2.0) >= 0) {
+            gradeString = "C";
+        } else if (Double.compare(userScore, 2.0) < 0 && Double.compare(userScore, 1.5) >= 0) {
+            gradeString = "D+";
+        } else if (Double.compare(userScore, 1.5) < 0 && Double.compare(userScore, 1.0) >= 0) {
+            gradeString = "D";
+        } else {
+            gradeString = "F";
+        }
+
+
+        return UserScoreResponse.builder()
+                .nickname(gradeString)
+                .gradeString(gradeString)
+                .grade(userScore)
+                .build();
+    }
 
 }

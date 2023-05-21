@@ -1,12 +1,10 @@
 package com.knucapstone.rudoori.service;
 
-import com.knucapstone.rudoori.common.expection.NonSelfException;
 import com.knucapstone.rudoori.model.dto.Board.BoardRequest;
 import com.knucapstone.rudoori.model.dto.Board.BoardResponse;
 import com.knucapstone.rudoori.model.entity.Posts;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.repository.BoardRepository;
-import com.knucapstone.rudoori.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,7 +87,7 @@ public class BoardService {
                     .build();
         }
 
-        throw new NonSelfException("자신의 게시글만 수정할 수 있습니다");
+        throw new RuntimeException("자신의 게시글만 수정할 수 있습니다");
 
     }
 
@@ -102,7 +100,7 @@ public class BoardService {
             boardRepository.deleteById(post.getPostId());
             return true;
         } else {
-            throw new NonSelfException("자신의 게시글만 삭제할 수 있습니다");
+            throw new RuntimeException("자신의 게시글만 삭제할 수 있습니다");
         }
     }
 }
