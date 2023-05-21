@@ -3,6 +3,8 @@ package com.knucapstone.rudoori.controller;
 
 import com.knucapstone.rudoori.common.ApiResponse;
 import com.knucapstone.rudoori.model.dto.User;
+import com.knucapstone.rudoori.model.entity.Block;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.knucapstone.rudoori.model.dto.*;
@@ -67,6 +69,9 @@ public class UserController {
         return ApiResponse.createSuccess(userService.showMentionList(userId));
     }
 
-
+    @PostMapping("/block/person")
+    public ApiResponse<User.BlockResponse> blockUserId(@RequestBody @Valid User.BlockRequest blockRequest){
+        return ApiResponse.createSuccess(userService.blockUserId(blockRequest));
+    }
 }
 

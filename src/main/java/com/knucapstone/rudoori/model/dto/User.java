@@ -1,9 +1,7 @@
 package com.knucapstone.rudoori.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 public class User {
     @Data
@@ -29,5 +27,24 @@ public class User {
         private String nickName;
         private String userMail;
         private String phoneNumber;
+    }
+
+    @Getter
+    @Setter
+    public static class BlockRequest{
+        @NotNull
+        private String userId;
+        @NotNull
+        private String blockedId;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BlockResponse{
+        @NotNull
+        private String blockedId;
     }
 }

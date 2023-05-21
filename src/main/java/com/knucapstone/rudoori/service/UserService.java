@@ -1,11 +1,11 @@
 package com.knucapstone.rudoori.service;
-
-import com.knucapstone.rudoori.config.JwtService;
 import com.knucapstone.rudoori.model.dto.User;
 import com.knucapstone.rudoori.model.dto.*;
+import com.knucapstone.rudoori.model.entity.Block;
 import com.knucapstone.rudoori.model.entity.Mention;
 import com.knucapstone.rudoori.model.dto.UserInfoDto;
 import com.knucapstone.rudoori.model.entity.UserInfo;
+import com.knucapstone.rudoori.repository.BlockRepository;
 import com.knucapstone.rudoori.repository.MentionRepository;
 import com.knucapstone.rudoori.repository.UserRepository;
 import com.knucapstone.rudoori.token.Token;
@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,7 @@ public class UserService {
     private final MentionRepository mentionRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
+    private final BlockRepository blockRepository;
 
     @Transactional
     public boolean deleteUser(UserInfoDto loginInfo) {
@@ -66,6 +68,7 @@ public class UserService {
         }
         return equalPwd;
     }
+
 
     @Transactional(readOnly = true)
     public UserInfoDto getUserProfile(String userId) {
@@ -118,9 +121,9 @@ public class UserService {
 
     @Transactional
     public MentionResponse mentionForMan(String opponentId, MentionRequest mentionRequest) {
-        UserInfo findInfo = userRepository.findByUserId(opponentId).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
+        UserInfo findInfo = userRepository.findByUserId(opponentId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        if(findInfo.isEnabled() && findInfo != null) {
+        if (findInfo.isEnabled() && findInfo != null) {
             Mention newMention = Mention.builder()
                     .userId(findInfo)
                     .content(mentionRequest.getContent())
@@ -155,4 +158,21 @@ public class UserService {
         return null;
     }
 
+    @Transactional
+    public User.BlockResponse blockUserId(User.BlockRequest blockRequest) {
+        UserInfo userInfo = userRepository.findByUserId(blockRequest.getUserId()).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+        Optional<UserInfo> blockedUser = userRepository.findByUserId(blockRequest.getBlockedId());
+        if (blockedUser.isPresent()) {
+            Block block = Block
+                    .builder()
+                    .blockedUser(blockRequest.getBlockedId())
+                    .userId(userInfo)
+                    .build();
+            blockRepository.save(block);
+
+            return User.BlockResponse.builder()
+                    .blockedId(blockRequest.getBlockedId())
+                    .build();
+        } else throw new NullPointerException("존재하지 않는 아이디입니다.");
+    }
 }
