@@ -1,12 +1,14 @@
 package com.knucapstone.rudoori.model.dto.Board;
 
 
+import com.knucapstone.rudoori.model.dto.ReplyDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,6 +26,10 @@ public class BoardResponse {
     private int dislikeCount;
     private int scrap;
     private LocalDateTime createdDt;
+    // 해당 게시글의 댓글 모음
+    private List<ReplyDto.ReplyGroup> replyGroup;
+
 //    private String media;
-    
+
+
 }

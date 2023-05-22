@@ -3,6 +3,7 @@ package com.knucapstone.rudoori.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,8 @@ public class UserInfo implements UserDetails{
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime modifiedDt;
     private Boolean isUsed;
     private Boolean isBlocked;
     @Enumerated(EnumType.STRING)

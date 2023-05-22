@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,4 +38,7 @@ public class Posts {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserInfo userId;
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true)   //orphanRemoval : 게시글 삭제시, 댓글 자동삭제
+    private List<Reply> replies = new ArrayList<>();
 }

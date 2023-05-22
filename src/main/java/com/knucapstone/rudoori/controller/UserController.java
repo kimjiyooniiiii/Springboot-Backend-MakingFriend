@@ -46,12 +46,18 @@ public class UserController {
         return ApiResponse.createSuccess(userService.getInfo(userId));
     }
 
+    @PatchMapping("/info/update/{userId}")
+    public ApiResponse<User.UserInfoResponse> updateUserInfo
+            (@PathVariable("userId")String userId, @RequestBody User.UpdateInfoRequest updateRequest) {
+        return ApiResponse.createSuccess(userService.updateUserInfo(userId, updateRequest));
+    }
+
     @PostMapping("/logout")
     public ApiResponse<Boolean> logoutUser(@RequestBody LogoutRequest logoutRequest){
         return ApiResponse.createSuccess(userService.logoutUser(logoutRequest));
     }
     @PostMapping("/write/mention/{opponentId}")
-    public ApiResponse<MentionResponse> mentionForMan(@PathVariable("opponentId") String opponentId, @RequestBody MentionRequest mentionRequest) {
+    public ApiResponse<MentionDto.MentionResponse> mentionForMan(@PathVariable("opponentId") String opponentId, @RequestBody MentionDto.MentionRequest mentionRequest) {
         return ApiResponse.createSuccess(userService.mentionForMan(opponentId, mentionRequest));
     }
 

@@ -3,11 +3,10 @@ package com.knucapstone.rudoori.controller;
 import com.knucapstone.rudoori.common.ApiResponse;
 import com.knucapstone.rudoori.model.dto.Board.BoardRequest;
 import com.knucapstone.rudoori.model.dto.Board.BoardResponse;
-import com.knucapstone.rudoori.model.entity.Posts;
+import com.knucapstone.rudoori.model.dto.ReplyDto;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,5 +54,24 @@ public class BoardController {
             @AuthenticationPrincipal UserInfo userinfo
     ){
         return ApiResponse.createSuccess(boardService.deleteBoard(boardId ,userinfo));
+    }
+
+    @PostMapping("/{boardId}/reply/parent")
+    public ApiResponse<ReplyDto.CreateReplyResponse> createParentReply
+            (@PathVariable("boardId") Long boardId,
+             @RequestBody ReplyDto.CreateReplyRequest request,
+             @AuthenticationPrincipal UserInfo userInfo)
+    {
+        return ApiResponse.createSuccess(boardService.createParentReply(boardId, userInfo, request));
+    }
+
+    @PostMapping("/{boardId}/reply/{parentId}/child")
+    public ApiResponse<ReplyDto.CreateReplyResponse> createChildReply
+            (@PathVariable("boardId") Long boardId,
+             @PathVariable("parentId") Long parentId,
+             @AuthenticationPrincipal UserInfo userInfo,
+             @RequestBody ReplyDto.CreateReplyRequest request)
+    {
+        return ApiResponse.createSuccess(boardService.createChildReply(boardId, parentId, userInfo, request));
     }
 }

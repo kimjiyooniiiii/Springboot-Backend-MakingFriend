@@ -101,6 +101,36 @@ public class UserService {
                 .build();
     }
 
+    // 회원정보 수정 : 이름,생일,성별,전공,이메일,전화번호,닉네임만 수정가능
+    @Transactional
+    public User.UserInfoResponse updateUserInfo(String userId, User.UpdateInfoRequest updateRequest) {
+        UserInfo findInfo = userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+
+        if (findInfo.isEnabled()) {
+            findInfo.setName(updateRequest.getUserName());
+            findInfo.setBirthday(updateRequest.getBirthday());
+            findInfo.setGender(updateRequest.getGender());
+            findInfo.setMajor(updateRequest.getMajor());
+            findInfo.setEmail(updateRequest.getUserMail());
+            findInfo.setPhoneNumber(updateRequest.getPhoneNumber());
+            findInfo.setNickname(updateRequest.getNickname());
+
+        }
+
+        //userRepository.save(findInfo); 기존 데이터를 수정하는 것으로 이미 영속화 되어있어 따로 save할 필요없다.
+
+        return User.UserInfoResponse.builder()
+                .userId(findInfo.getUserId())
+                .userName(findInfo.getName())
+                .phoneNumber(findInfo.getPhoneNumber())
+                .userMail(findInfo.getEmail())
+                .birthday(findInfo.getBirthday())
+                .gender(findInfo.getGender())
+                .major(findInfo.getMajor())
+                .nickName(findInfo.getNickname())
+                .build();
+    }
+
     @Transactional
     public boolean logoutUser(LogoutRequest request) {
         var user = userRepository.findById(request.getUserId()).orElseThrow(()-> new NullPointerException("존재하지 않는 아이디입니다."));
@@ -122,7 +152,7 @@ public class UserService {
     }
 
     @Transactional
-    public MentionResponse mentionForMan(String opponentId, MentionRequest mentionRequest) {
+    public MentionDto.MentionResponse mentionForMan(String opponentId, MentionDto.MentionRequest mentionRequest) {
         UserInfo findInfo = userRepository.findByUserId(opponentId).orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
         if (findInfo.isEnabled()) {
@@ -133,7 +163,7 @@ public class UserService {
 
             mentionRepository.save(newMention);
 
-            return MentionResponse.builder()
+            return MentionDto.MentionResponse.builder()
                     .opponentNickName(findInfo.getNickname())
                     .content(mentionRequest.getContent())
                     .build();

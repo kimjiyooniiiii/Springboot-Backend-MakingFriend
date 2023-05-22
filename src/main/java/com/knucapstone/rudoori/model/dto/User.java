@@ -29,6 +29,34 @@ public class User {
         private String phoneNumber;
     }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateInfoRequest {
+//
+//        {
+//            "userName" : "김동훈",
+//            "birthday" : "1995.06.15",
+//            "gender" : "Male",
+//            "major" : "컴퓨터공학과",
+//            "nickname" : "푸들",
+//            "userMail" : "a@gmail.com",
+//            "phoneNumber" : "010-1111-1111",
+//    }
+
+        private String userName;
+        private String birthday;
+        private String gender;
+        private String major;
+        private String nickname;
+        private String userMail;
+        private String phoneNumber;
+
+
+    }
+
+
     @Getter
     @Setter
     public static class BlockRequest{
