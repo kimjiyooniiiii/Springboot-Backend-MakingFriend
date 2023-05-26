@@ -1,13 +1,17 @@
 package com.knucapstone.rudoori.service;
 
-import com.knucapstone.rudoori.model.dto.Board.*;
 import com.knucapstone.rudoori.model.dto.ReplyDto;
+import com.knucapstone.rudoori.model.dto.ScrapResponse;
 import com.knucapstone.rudoori.model.entity.Posts;
 import com.knucapstone.rudoori.model.entity.Reply;
 import com.knucapstone.rudoori.model.entity.UserInfo;
+import com.knucapstone.rudoori.model.entity.UserScraps;
 import com.knucapstone.rudoori.repository.BoardJpaRepository;
 import com.knucapstone.rudoori.repository.BoardRepository;
 import com.knucapstone.rudoori.repository.ReplyRepository;
+import com.knucapstone.rudoori.model.dto.Board.BoardRequest;
+import com.knucapstone.rudoori.model.dto.Board.BoardResponse;
+import com.knucapstone.rudoori.repository.ScrapRepository;
 import com.knucapstone.rudoori.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +31,7 @@ public class BoardService {
     private final BoardJpaRepository boardJpaRepository;
     private final UserRepository userRepository;
     private final ReplyRepository replyRepository;
+    private final ScrapRepository scrapRepository;
 
 
     @Transactional
@@ -173,16 +178,16 @@ public class BoardService {
         PageRequest pageRequest = PageRequest.of(page, size);
         List<Posts> post = boardJpaRepository.findPage(size, page);
         List<BoardResponse> boardResponses = new ArrayList<>();
-        for(Posts p : post){
+        for (Posts p : post) {
             boardResponses.add(BoardResponse.builder()
-                            .postId(p.getPostId())
-                            .title(p.getTitle())
-                            .content(p.getContent())
-                            .writer(p.getWriter())
-                            .likeCount(p.getLikeCount())
-                            .dislikeCount(p.getDislikeCount())
-                            .scrap(p.getScrap())
-                            .createdDt(p.getCreatedDt())
+                    .postId(p.getPostId())
+                    .title(p.getTitle())
+                    .content(p.getContent())
+                    .writer(p.getWriter())
+                    .likeCount(p.getLikeCount())
+                    .dislikeCount(p.getDislikeCount())
+                    .scrap(p.getScrap())
+                    .createdDt(p.getCreatedDt())
                     .build());
         }
         return boardResponses;
@@ -246,5 +251,71 @@ public class BoardService {
                 .userId(user.getUserId())
                 .build();
 
+    }
+
+    @Transactional
+    public ScrapResponse createScrapBoard(Long postId, UserInfo userinfo) {
+        var post = boardRepository.findById(postId).orElseThrow(() -> new NullPointerException("존재하지 않는 게시글입니다."));
+        var user = userRepository.findById(userinfo.getUserId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다."));
+
+        Optional<UserScraps> scrap = scrapRepository.findByUserIdAndPostId(userinfo, post);
+        if(scrap.isPresent()){
+            throw new RuntimeException("이미 스크랩한 게시글 입니다.");
+        }
+        else {
+            UserScraps userScraps = UserScraps.builder()
+                    .userId(user)
+                    .postId(post)
+                    .build();
+
+            scrapRepository.save(userScraps);
+
+            return ScrapResponse.builder()
+                    .postId(userScraps.getPostId().getPostId())
+                    .userId(userScraps.getUserId().getUserId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .writer(post.getWriter())
+                    .build();
+        }
+    }
+
+
+    @Transactional
+    public boolean deleteScrapBoard(Long postId, UserInfo userinfo) {
+        var post = boardRepository.findById(postId).orElseThrow(() -> new NullPointerException("존재하지 않는 게시글입니다."));
+         Optional<UserScraps> scrap = scrapRepository.findByUserIdAndPostId(userinfo, post);
+
+        if(scrap.isEmpty()){
+            throw new RuntimeException("스크랩 되지 않은 게시글 입니다.");
+        }
+        scrapRepository.delete(scrap.get());
+        return true;
+    }
+
+    @Transactional
+    public List<ScrapResponse> getScrapBoard(UserInfo userinfo) {
+        // 자신이 한 scrap 정보들을 가져옴
+        // userScraps는 scrapId, userId, postId, createdAt을 가짐
+        List<UserScraps> userScraps = scrapRepository.findByUserId(userinfo);
+        List<ScrapResponse> scrapList  = new ArrayList<>();
+
+        for (UserScraps s : userScraps) {
+
+            // for문마다 repository 새로 불러오는거 최적화 or 다른 방법 구상 필요!!
+            // join 해야하나 scrap이랑??
+            var post = boardRepository.findById(s.getPostId().getPostId()).orElseThrow(() -> new NullPointerException("존재하지 않는 게시글입니다."));
+
+            scrapList.add(
+                    ScrapResponse.builder()
+                            .postId(s.getPostId().getPostId())
+                            .userId(s.getUserId().getUserId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .writer(post.getWriter())
+                            .build());
+        }
+
+        return scrapList;
     }
 }
