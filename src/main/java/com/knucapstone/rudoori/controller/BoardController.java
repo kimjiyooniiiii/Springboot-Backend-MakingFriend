@@ -3,11 +3,10 @@ package com.knucapstone.rudoori.controller;
 import com.knucapstone.rudoori.common.ApiResponse;
 import com.knucapstone.rudoori.model.dto.Board.BoardRequest;
 import com.knucapstone.rudoori.model.dto.Board.BoardResponse;
-import com.knucapstone.rudoori.model.entity.Posts;
+import com.knucapstone.rudoori.model.dto.ScrapResponse;
 import com.knucapstone.rudoori.model.entity.UserInfo;
 import com.knucapstone.rudoori.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,5 +54,28 @@ public class BoardController {
             @AuthenticationPrincipal UserInfo userinfo
     ){
         return ApiResponse.createSuccess(boardService.deleteBoard(boardId ,userinfo));
+    }
+
+    @PostMapping("/{boardId}/scrap")
+    public ApiResponse<ScrapResponse> createScrapBoard(
+            @PathVariable("boardId") Long boardId,
+            @AuthenticationPrincipal UserInfo userinfo
+    ) {
+        return ApiResponse.createSuccess(boardService.createScrapBoard(boardId, userinfo));
+    }
+
+    @DeleteMapping("/{boardId}/scrap")
+    public ApiResponse<Boolean> deleteScrapBoard(
+            @PathVariable("boardId") Long boardId,
+            @AuthenticationPrincipal UserInfo userinfo
+    ) {
+        return ApiResponse.createSuccess(boardService.deleteScrapBoard(boardId, userinfo));
+    }
+
+    @GetMapping("/scrap")
+    public ApiResponse<List<ScrapResponse>> getScrapBoard(
+            @AuthenticationPrincipal UserInfo userinfo
+    ) {
+        return ApiResponse.createSuccess(boardService.getScrapBoard(userinfo));
     }
 }
