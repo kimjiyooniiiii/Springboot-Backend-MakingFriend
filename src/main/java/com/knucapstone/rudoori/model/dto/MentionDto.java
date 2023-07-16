@@ -1,14 +1,10 @@
 package com.knucapstone.rudoori.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class MentionDto {
 
     @Data
-    @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class MentionRequest {
@@ -20,13 +16,11 @@ public class MentionDto {
         private String content;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Getter
+    @Setter
     @Builder
     public static class MentionResponse {
         private String opponentNickName;
         private String content;
-
     }
 }

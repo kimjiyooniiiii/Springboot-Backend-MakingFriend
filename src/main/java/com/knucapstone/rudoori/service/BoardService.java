@@ -69,10 +69,8 @@ public class BoardService {
     public BoardResponse getBoard(Long boardId) {
         Posts post = boardRepository.findById(boardId).orElseThrow(NullPointerException::new);
 
-        Optional<Posts> post2 = boardRepository.findById(boardId);
-
         // 해당 게시글의 댓글 모두 불러오기
-        List<Reply> replies = replyRepository.findAllByPost(post2);
+        List<Reply> replies = replyRepository.findAllByPost(post);
 
         // 댓글 정렬하기
         List<ReplyDto.ReplyGroup> groups = sortReply(boardId, replies);

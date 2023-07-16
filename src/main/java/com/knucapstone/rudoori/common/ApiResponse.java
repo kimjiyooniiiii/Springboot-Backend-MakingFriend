@@ -10,7 +10,7 @@ import org.springframework.validation.ObjectError;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+//true,false로 바꾸기
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiResponse<T> {
