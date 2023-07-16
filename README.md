@@ -1,13 +1,30 @@
-# RUDoori?
-### Knu capstone project
-## 캡스톤 프로젝트
+# RUDoori-Backend (친구 만들기 앱 프로젝트)
 
 <br>
+
+#### 💡 주제 : 많은 학생수를 보유한 강원대학교에서 낯선 환경의 학우들이 같이 공부하고 운동하고 밥먹을 친구를 구할 수 있는 앱
+- **Backend :** Spring boot, Spring Security
+- **Frontend :** React-native
+
+<br>
+
+#### 📚 여기는 Backend 개발의 기록입니다!
+
+
+- 🖥 **프레임워크 :** Spring boot 3.0.5, Spring Security
+  
+- ⚙ **패키지 관리자 :** Gradle
+
+- 📲 **Use :** Restful API
+
+<br><br>
 
 ## 규칙
 - 1 작업 1 커밋
 - 각각의 수정된 코드 주석 작성 및 수정 일자, 수정자 이름 작성
 - 작업 후 스프레드 시트 수정 필수
+
+<br><br>
 
 ## commit 메시지 참고사항
 - FEAT : 새로운 기능의 추가
@@ -17,7 +34,8 @@
 - REFACTOR: 코드 리펙토링
 - TEST: 테스트 코트, 리펙토링 테스트 코드 추가
 - CHORE: 빌드 업무 수정, 패키지 매니저 수정(ex .gitignore 수정 같은 경우)
-  <br>
+
+  <br><br>
 
 ## :exclamation: 주의사항
 - main branch push 금지
@@ -33,7 +51,7 @@ https://docs.google.com/spreadsheets/d/16sM6Ys2sdX6XfJ24DwlpQ8nKQ-M5O-r3yLUhIxic
 https://www.toptal.com/developers/gitignore
 ```
 
-<br>
+<br><br>
 
 ## :star: git 명령어
 
